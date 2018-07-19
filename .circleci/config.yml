@@ -1,0 +1,44 @@
+version: 2
+common: &common
+  steps:
+    - checkout
+    - run:
+        name: Setup a virtualenv
+        command: virtualenv venv
+    - run:
+        name: Install Dependencies
+        command: |
+          source venv/bin/activate
+          pip install tox
+    - run:
+        name: Potentially wait for docker to boot
+        command: sleep $DOCKERWAIT
+    - run:
+        name: Run tests with tox
+        command: |
+          source venv/bin/activate
+          tox
+
+jobs:
+  test-py27:
+    <<: *common
+    docker:
+      - image: circleci/python:2.7
+    environment:
+      - TOXENV: py27
+      - DOCKERWAIT: 30
+  test-py36:
+    <<: *common
+    docker:
+      - image: circleci/python:3.6
+      - image: jbfavre/vertica:8.1.1-16_ubuntu-14.04
+    environment:
+      - TOXENV: py36
+      - DOCKERWAIT: 30
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-py27
+      - test-py36
