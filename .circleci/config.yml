@@ -24,6 +24,7 @@ jobs:
     <<: *common
     docker:
       - image: circleci/python:2.7
+      - image: jbfavre/vertica:8.1.1-16_ubuntu-14.04
     environment:
       - TOXENV: py27
       - DOCKERWAIT: 30
